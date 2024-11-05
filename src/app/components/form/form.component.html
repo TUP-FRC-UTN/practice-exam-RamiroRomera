@@ -1,0 +1,60 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Formulario de Datos del Cliente</h2>
+  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="clienteNombre">Nombre</label>
+      <input type="text" class="form-control" id="clienteNombre" placeholder="Ingrese el nombre" formControlName="nombre">
+      @if (orderForm.get('nombre')?.touched && orderForm.get('nombre')?.invalid) {
+        @if (orderForm.get('nombre')?.getError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
+        @if (orderForm.get('nombre')?.getError('minlength')) { <small class="text-danger ms-2">El numero de caracteres es 3.</small> }
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="clienteEmail">Email</label>
+      <input type="text" class="form-control" id="clienteEmail" placeholder="Ingrese el correo electrónico"  formControlName="email">
+      @if (orderForm.get('email')?.touched && orderForm.get('email')?.invalid) {
+        @if (orderForm.get('email')?.getError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
+        @if (orderForm.get('email')?.getError('email')) { <small class="text-danger ms-2">Debe tener formato de mail.</small> }
+        @if (orderForm.get('email')?.getError('emailExists')) { <small class="text-danger ms-2">El mail ya existe.</small> }
+      }
+    </div>
+
+    <button type="button" class="btn btn-success mb-5" (click)="addProducts()">Agregar Producto</button>
+
+    <div class="" formArrayName="productos">
+      <!--      TODO: Probar el length        -->
+      @for (product of productos.controls; track $index) {
+        <div class="" [formGroupName]="$index">
+          <div class="form-group">
+            <label for="productoNombre">Nombre del producto</label>
+            <select class="form-control" id="productoNombre" formControlName="nombreP" (change)="changeProduct($index)">
+              @for (prod of productosForSelect; track prod) {
+                <option [ngValue]="prod">{{prod.name}}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="productoCantidad">Cantidad</label>
+            <input type="number" class="form-control" id="productoCantidad" placeholder="Ingrese la cantidad" formControlName="cantidad" (change)="changeQuantity($index)">
+          </div>
+
+          <div class="form-group">
+            <label for="productoPrecio">Precio</label>
+            <input type="text" class="form-control" id="productoPrecio" formControlName="precio">
+          </div>
+
+          <div class="form-group">
+            <label for="productoStock">Stock disponible</label>
+            <input type="text" class="form-control" id="productoStock" formControlName="stock">
+          </div>
+
+          <button type="button" class="btn btn-danger mt-2" id="eliminarProducto" (click)="removeProducts($index)">Eliminar producto</button>
+        </div>
+      }
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">Enviar</button>
+  </form>
+</div>
