@@ -18,6 +18,10 @@ export class OrdersService {
     let params:  HttpParams = new HttpParams()
       .set('email', email)
 
-    return this.http.get<Order>(`${this.host}/orders`, {params})
+    return this.http.get<Order[]>(`${this.host}/orders`, {params})
+  }
+
+  getAll() {
+    return this.http.get<Order[]>(`${this.host}/orders`)
   }
 }

@@ -5,7 +5,9 @@ import {stockValidator} from "../../validators/sync/stock-validators";
 import {OrdersService} from "../../services/orders.service";
 import {ProductsService} from "../../services/products.service";
 import {Product} from "../../models/product";
+import {Order} from "../../models/order";
 import {emailValidator} from "../../validators/async/email-validator";
+import {notRepitedProducts} from "../../validators/sync/not-repited-products";
 
 @Component({
   selector: 'app-form',
@@ -30,11 +32,10 @@ export class FormComponent {
   orderForm: FormGroup = new FormGroup({
     nombre: new FormControl('', [Validators.minLength(3), Validators.required]),
     email: new FormControl('', [Validators.email, Validators.required], emailValidator(this.orderService)),
-    productos: new FormArray([])
+    productos: new FormArray([], [notRepitedProducts])
   })
 
   ngOnInit() {
-    console.log("ASDASD")
     this.getAllProducts()
     this.addProducts();
   }
@@ -44,6 +45,8 @@ export class FormComponent {
   }
 
   addProducts() {
+    if (this.productos.length > 10) { return; }
+
     const newModuleForm = new FormGroup({
       nombreP: new FormControl('', [Validators.required]),
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
@@ -62,16 +65,44 @@ export class FormComponent {
   }
 
   removeProducts(index: number) {
-    if (index < 1) { return; }
+    if (this.productos.length <= 1) { return; }
 
     this.productos.removeAt(index)
   }
 
   onSubmit() {
-    console.log(this.orderForm.value);
+    if (this.orderForm.valid) {
+      let total = 0;
+      let products : Product[] = []
 
-    if (this.orderForm.valid && this.productos.length <= 10) {
-      console.log('Validado');
+      for (const product of this.productos.controls) {
+        total += product.get("cantidad")?.value * product.get("precio")?.value
+        products.push(product.get("nombreP")?.value)
+      }
+      total = Math.ceil(total)
+      if (total >= 1000) {
+        total = total * 0.9
+      }
+      let code = this.orderForm.controls["nombre"].value.at(0)
+      let email = this.orderForm.controls["email"].value
+      for (let i = email.length-1; i > email.length - 5; i--) {
+        code += email.at(i)
+      }
+      code += new Date().toISOString()
+
+
+      let order : Order = {
+        customerName: this.orderForm.controls["nombre"].value,
+        email: this.orderForm.controls["email"].value,
+        total: total,
+        orderCode: code,
+        timestamp: new Date(),
+        products: products
+      }
+
+      this.orderService.createOrder(order).subscribe({
+        next: response => {alert("Orden creada con exito.")}
+      })
     }
   }
 
@@ -79,7 +110,6 @@ export class FormComponent {
     this.productService.getAll().subscribe({
       next: result => { this.productosForSelect = result; },
       error: error => {
-        console.log(error)
         alert("Error al obtener los productos.")
       }
     })
@@ -88,13 +118,17 @@ export class FormComponent {
   changeProduct(index: number) {
     const moduleControl = this.productos.at(index);
     const selectedType = moduleControl.get('nombreP')?.value;
+    const cantidad = moduleControl.get('cantidad');
     const precio = moduleControl.get('precio');
     const stock = moduleControl.get('stock');
+
 
     for (let producto of this.productosForSelect) {
       if (producto.id === selectedType.id) {
         precio?.setValue(producto.price);
         stock?.setValue(producto.stock);
+        this.stockP = producto.stock
+        cantidad?.setValidators([stockValidator(this.stockP)]);
         break;
       }
     }

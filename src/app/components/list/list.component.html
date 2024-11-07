@@ -1,0 +1,43 @@
+
+<div class="form-group">
+  <label for="clienteEmail">Busqueda dinamica por nombre o correo</label>
+  <input type="text" class="form-control" id="clienteEmail" placeholder="Ingrese el correo electrónico" (change)="filterList()" [(ngModel)]="filterInput" name="ngModel">
+</div>
+
+<table class="table table-striped fixed-table mt-3" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #ordersTable>
+  <thead>
+  <tr>
+    <th scope="col">Codigo de Orden</th>
+    <th scope="col">Nombre del Cliente</th>
+    <th scope="col">Email</th>
+    <th scope="col">Cantidad de Productos</th>
+    <th scope="col">Fecha de Compra</th>
+    <th scope="col">Total del Pedido</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (order of (filterOrdersList.length ? filterOrdersList : ordersList); track order) {
+      <tr>
+        <td>
+          {{ order.orderCode }}
+        </td>
+        <td>
+          {{ order.customerName }}
+        </td>
+        <td>
+          {{ order.email }}
+        </td>
+        <td>
+          {{ order.products.length }}
+        </td>
+        <td>
+          {{ order.timestamp }}
+        </td>
+        <td>
+          {{ order.total }}
+        </td>
+      </tr>
+    }
+  </tbody>
+
+</table>

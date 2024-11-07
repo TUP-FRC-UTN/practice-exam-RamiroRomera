@@ -21,9 +21,10 @@
     </div>
 
     <button type="button" class="btn btn-success mb-5" (click)="addProducts()">Agregar Producto</button>
-
+    @if (orderForm.controls['productos'].getError("duplicateItem")) {
+      <h2 class="text-danger">No esta permitido elegir el mismo productos dos veces.</h2>
+    }
     <div class="" formArrayName="productos">
-      <!--      TODO: Probar el length        -->
       @for (product of productos.controls; track $index) {
         <div class="" [formGroupName]="$index">
           <div class="form-group">
@@ -37,7 +38,12 @@
 
           <div class="form-group">
             <label for="productoCantidad">Cantidad</label>
-            <input type="number" class="form-control" id="productoCantidad" placeholder="Ingrese la cantidad" formControlName="cantidad" (change)="changeQuantity($index)">
+            <input type="number" class="form-control" id="productoCantidad" placeholder="Ingrese la cantidad" formControlName="cantidad" > <!--- (change)="changeQuantity($index)" -->
+            @if (product.get('cantidad')?.touched && product.get('cantidad')?.invalid) {
+              @if (product.get('cantidad')?.hasError('required')) { <small class="text-danger ms-2">Campo requerido.</small> }
+              @if (product.get('cantidad')?.hasError('required')) { <small class="text-danger ms-2">El numero minimo es 1.</small> }
+              @if (product.get('cantidad')?.hasError('stockInsuficiente')) { <small class="text-danger ms-2">El stock es insuficiente.</small> }
+            }
           </div>
 
           <div class="form-group">
