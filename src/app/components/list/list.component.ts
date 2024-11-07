@@ -30,6 +30,7 @@ export class ListComponent {
 
   filterList() {
     if (this.filterInput.length > 0) {
+      this.filterOrdersList = []
       for (const order of this.ordersList) {
         if (order.email.match(this.filterInput) || order.customerName.match(this.filterInput)) {
           this.filterOrdersList.push(order);

@@ -111,6 +111,34 @@
           "stock": 100
         }
       ]
+    },
+    {
+      "id": "5fac",
+      "customerName": "Ramiro",
+      "email": "ramiro@gmail.com",
+      "total": 9180,
+      "orderCode": "Rmoc.2024-11-07T17:25:02.388Z",
+      "timestamp": "2024-11-07T17:25:02.389Z",
+      "products": [
+        {
+          "id": "2",
+          "name": "Smartphone X12",
+          "price": 699.99,
+          "stock": 100
+        },
+        {
+          "id": "1",
+          "name": "Laptop Gaming Pro",
+          "price": 999.99,
+          "stock": 50
+        },
+        {
+          "id": "4",
+          "name": "Smart Watch V4",
+          "price": 199.99,
+          "stock": 120
+        }
+      ]
     }
   ]
 }
